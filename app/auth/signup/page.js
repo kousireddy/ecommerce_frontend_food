@@ -1,42 +1,37 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signupUser } from "@/lib/api/auth/signup";
+
 export default function Signup() {
 
 const [name,setName] = useState("")
 const [email,setEmail] = useState("")
 const [password,setPassword] = useState("")
-const router = useRouter();
+const router = useRouter()
 
 const handleSubmit = async(e)=>{
 e.preventDefault()
 
-const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/register/`,{
-        method:"POST",
-        headers:{
-                "Content-Type":"application/json"
-                },
-                body:JSON.stringify({
-                username: name,
-                email: email,
-                password: password
-                })
-        })
+try{
 
-const data = await res.json()
+const data=await signupUser(name,email,password)
 
 console.log(data)
 
-if(res.ok){
-        alert("Signup successful. OTP sent to your email")
-        router.push(`/auth/verifyotp?email=${email}`)
-}else{
-        alert(JSON.stringify(data))
+alert("Signup successful. OTP sent to your email")
+
+router.push(`/auth/verifyotp?email=${email}`)
+
+}catch(err){
+
+alert(err.message)
+
 }
+
 }
 
 return(
-
 
 <div className="relative min-h-screen flex items-center justify-center">
 
@@ -80,22 +75,25 @@ onChange={(e)=>setPassword(e.target.value)}
 
 <button
 type="submit"
-className="bg-pink-300 py-2 rounded-2xl font-semibold hover:bg-pink-300 transition"
+className="bg-pink-300 py-2 rounded-2xl font-semibold hover:bg-pink-400 transition"
 >
 submit
 </button>
 
 <p className="text-center text-md">
 already have an account?
-<span 
+<span
 onClick={()=>router.push("/auth/login")}
-className="text-blue-600 ml-1 cursor-pointer">
+className="text-blue-600 ml-1 cursor-pointer"
+>
 login
 </span>
 </p>
 
 </form>
+
 </div>
+
 </div>
 
 )

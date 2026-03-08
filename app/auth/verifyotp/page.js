@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { verifyOtp } from "@/lib/api/auth/verifyotp"
 
 export default function VerifyOTP() {
 
@@ -16,27 +17,22 @@ const [message,setMessage] = useState("")
 const handleVerify = async (e) => {
 e.preventDefault()
 
-const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/verify-otp/`,{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-email: email,
-otp: otp
-})
-})
+try{
 
-const data = await res.json()
+const data = await verifyOtp(email,otp) 
 
-if(res.ok){
+console.log(data)
+
 setMessage("Email verified successfully")
+
 setTimeout(()=>{
 router.push("/auth/login")
 },2000)
-}
-else{
-setMessage(data.error || "Invalid OTP")
+
+}catch(error){
+
+setMessage(error.message)
+
 }
 
 }
@@ -51,10 +47,10 @@ alt="background"
 className="absolute inset-0 w-full h-full object-cover"
 />
 
-
 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
 
 <div className="relative z-10 bg-white/20 backdrop-blur-md p-8 rounded-2xl shadow-xl w-[90%] sm:w-[500px]">
+
 <h2 className="text-center text-2xl font-bold mb-6 bg-pink-400 py-2 rounded-lg">
 Verify OTP
 </h2>
@@ -94,4 +90,5 @@ Verify OTP
 </div>
 
 )
+
 }

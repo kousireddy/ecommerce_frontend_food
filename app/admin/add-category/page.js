@@ -1,7 +1,9 @@
 "use client"
+
 import { useState } from "react"
 import AdminSidebar from "@/components/common/AdminSidebar"
 import { IoMenu } from "react-icons/io5"
+import { addCategory } from "@/lib/api/admin/addcategory"
 
 export default function AddCategory(){
 
@@ -11,16 +13,20 @@ const [isOpen, setIsOpen] = useState(true);
 const handleSubmit = async(e)=>{
 e.preventDefault()
 
-await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/add-category/`,{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({name})
-})
+try{
+
+const data = await addCategory(name)   
+console.log(data)
 
 alert("Category Added")
 setName("")
+
+}catch(err){
+
+alert("Failed to add category")
+
+}
+
 }
 
 return(

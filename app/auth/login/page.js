@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Cookies from "js-cookie"
+import { loginUser } from "@/lib/api/auth/login"
 
 export default function Login(){
 
@@ -13,44 +14,36 @@ const router = useRouter()
 const handleLogin = async(e)=>{
 e.preventDefault()
 
-const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/login/`,{
-    method:"POST",
-            headers:{
-            "Content-Type":"application/json"
-            },
-                    body:JSON.stringify({
-                    email,
-                    password
-            })
-            })
+try{
 
-const data = await res.json()
+const data = await loginUser(email,password)
 
 console.log("Response:",data)
 
-if(res.ok){
+// storing token
+Cookies.set("access_token", data.access_token, { expires: 1 })
+Cookies.set("refresh_token", data.refresh_token, { expires: 7 })
 
-        //storing token
-        Cookies.set("access_token", data.access_token, { expires: 1 })
-        Cookies.set("refresh_token", data.refresh_token, { expires: 7 })
+alert("Login Successful")
 
-        alert("Login Successful")
-        console.log(data.user)
-        
-        localStorage.setItem("user_id", data.user.id)
+localStorage.setItem("user_id", data.user.id)
 
-        if(data.user.is_admin){
-        router.push("/admin/dashboard")
-        }else{
-        router.push("/dashboard")
-        }
-        
-        }else{
-        alert(data.non_field_errors || "Invalid email or password")
-        }
+if(data.user.is_admin){
+router.push("/admin/dashboard")
+}else{
+router.push("/dashboard")
+}
+
+}catch(error){
+
+alert(error.message)
+
+}
+
 }
 
 return(
+
 <div className="relative min-h-screen flex items-center justify-center">
 
 <img
@@ -106,5 +99,6 @@ signup
 </div>
 
 </div>
+
 )
 }

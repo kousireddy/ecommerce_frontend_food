@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { useRouter } from "next/navigation"
-import { getUserProfile } from "@/lib/api/profile"
+import { getUserProfile } from "@/lib/api/userinterface/profile"
 
 export default function Profile() {
 
@@ -53,7 +53,7 @@ export default function Profile() {
         <div className="flex justify-center mt-6">
           <button
             onClick={goToDashboard}
-            className="border p-2 rounded-xl bg-pink-500 text-white"
+            className="border p-4 rounded-xl bg-pink-500 text-white cursor-pointer"
           >
             Go to Dashboard
           </button>

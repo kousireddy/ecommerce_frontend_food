@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react"
 import AdminSidebar from "@/components/common/AdminSidebar"
-import { IoMenu } from "react-icons/io5";
+import { IoMenu } from "react-icons/io5"
+import { getUsers } from "@/lib/api/admin/users"
 
 export default function UsersPage(){
 
@@ -11,9 +12,22 @@ const [isOpen,setIsOpen] = useState(true)
 
 useEffect(()=>{
 
-fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/list/`)
-.then(res=>res.json())
-.then(data=>setUsers(data))
+const fetchUsers = async () => {
+
+try{
+
+const data = await getUsers()
+setUsers(data)
+
+}catch(err){
+
+console.error(err)
+
+}
+
+}
+
+fetchUsers()
 
 },[])
 
@@ -27,14 +41,14 @@ return(
 {/* Main Content */}
 <div className={`flex-1 p-10 transition-all duration-300 ${isOpen ? "ml-80" : "ml-0"}`}>
 
-  {/* Open Sidebar Button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className={`fixed top-5 left-5 bg-pink-500 text-white px-3 py-2 rounded-xl shadow 
-        ${isOpen ? "hidden" : "block"}`}
-      >
-        <IoMenu />
-      </button>
+{/* Open Sidebar Button */}
+<button
+onClick={()=>setIsOpen(true)}
+className={`fixed top-5 left-5 bg-pink-500 text-white px-3 py-2 rounded-xl shadow 
+${isOpen ? "hidden" : "block"}`}
+>
+<IoMenu/>
+</button>
 
 <h1 className="text-3xl font-bold m-6">
 Registered Users
@@ -57,6 +71,7 @@ Registered Users
 <tbody>
 
 {users.map((user)=>(
+
 <tr key={user.id} className="border-t">
 
 <td className="p-3">{user.id}</td>
@@ -64,6 +79,7 @@ Registered Users
 <td className="p-3">{user.email}</td>
 
 </tr>
+
 ))}
 
 </tbody>

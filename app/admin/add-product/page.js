@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import AdminSidebar from "@/components/common/AdminSidebar"
 import { IoMenu } from "react-icons/io5"
+import { addProduct } from "@/lib/api/admin/addproduct"
 
 export default function AddProduct() {
 
@@ -16,7 +17,7 @@ const [loading, setLoading] = useState(false)
 const [isOpen, setIsOpen] = useState(true)
 
 useEffect(() => {
-fetch("http://127.0.0.1:8000/api/products/categories/")
+fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/categories/`)
 .then(res => res.json())
 .then(data => setCategories(data))
 .catch(err => console.error("Error fetching categories:", err))
@@ -40,25 +41,8 @@ try {
 
 setLoading(true)
 
-const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/add-product/`,{
-method:"POST",
-body:formData
-})
-
-let data
-const contentType = res.headers.get("content-type") || ""
-
-if (contentType.includes("application/json")){
-data = await res.json()
-}else{
-data = {message: await res.text()}
-}
-
-if(!res.ok){
-alert(data.error || data.message || "Error adding product")
-setLoading(false)
-return
-}
+const data = await addProduct(formData)   // API call here
+console.log(data)
 
 alert("Product Added Successfully")
 
@@ -69,10 +53,11 @@ setImage(null)
 setPreview(null)
 setLoading(false)
 
-}catch(err){
-console.error(err)
-alert("Network Error")
+} catch(err) {
+
+alert(err.message || "Network Error")
 setLoading(false)
+
 }
 
 }
@@ -141,7 +126,7 @@ className="border p-2 w-full rounded-lg focus:ring-2 focus:ring-pink-400 outline
 </select>
 
 <label className="bg-pink-500 text-white px-4 py-2 rounded cursor-pointer inline-block">
-    Upload Image
+Upload Image
 <input
 type="file"
 accept="image/*"
@@ -152,7 +137,6 @@ setPreview(URL.createObjectURL(e.target.files[0]))
 className="hidden"
 />
 </label>
-
 
 {preview && (
 <img
